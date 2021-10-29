@@ -37,7 +37,7 @@ PC_USER_ROLES=$(curl --request GET \
 PC_USER_ROLE_ID=$(printf %s "${PC_USER_ROLES}" | jq '.[] | {id: .id, name: .name}' | jq -r '.name, .id'| awk "/""${PC_USER_ROLE}""/{getline;print}")
 
 PC_ROLE_PAYLOAD_PRE='{
-  "accessKeyExpiration": 0,
+  "accessKeyExpiration": "%s",
   "accessKeyName": "%s",
   "accessKeysAllowed": "%s",
   "defaultRoleId": "%s",
