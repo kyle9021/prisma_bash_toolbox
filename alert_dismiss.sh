@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Author Kyle Butler
 # Requires jq to be installed on the system you are running the script: https://stedolan.github.io/jq/download/ 
 
 # Instructions to install jq:
