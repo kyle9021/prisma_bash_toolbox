@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Author Kyle Butler
 # REQUIREMENTS:
 #   jq needs to be installed: 
 #   debian/ubuntu: sudo apt install jq
