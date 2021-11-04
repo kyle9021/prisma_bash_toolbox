@@ -6,7 +6,7 @@
 
 Disclaimer:
 
-This is a community toolkit and IS NOT supported nor maintained by PALO ALTO NETWORKS. Please review license before using. 
+This is a community toolkit and IS NOT supported nor maintained by Palo Alto Networks. Please review license before using. 
 
 
 ## Requirements:
