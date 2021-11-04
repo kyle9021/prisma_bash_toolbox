@@ -1,5 +1,6 @@
 #!/bin/bash
 # Requires jq to be installed
+# Author Kyle Butler
 
 
 source ./secrets/secrets
