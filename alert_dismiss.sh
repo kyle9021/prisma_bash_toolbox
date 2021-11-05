@@ -25,10 +25,10 @@ TIMEUNIT="year" # minute, hour, day, week, month, year
 TIMEAMOUNT="1" # integer value
 
 
-AUTH_PAYLOAD_PRE='{"username": "%s", "password": "%s"}'
-
-AUTH_PAYLOAD=$(printf "$AUTH_PAYLOAD_PRE" "$PC_ACCESSKEY" "$PC_SECRETKEY")
-
+AUTH_PAYLOAD=$(cat <<EOF
+{"username": "$PC_ACCESSKEY", "password": "$PC_SECRETKEY"}
+EOF
+)
 
 
 ##### NO EDITS BELOW THIS NEEDED #######
@@ -36,22 +36,23 @@ AUTH_PAYLOAD=$(printf "$AUTH_PAYLOAD_PRE" "$PC_ACCESSKEY" "$PC_SECRETKEY")
 
 PC_JWT=$(curl --silent \
               --request POST \
-              --url "${PC_APIURL}/login" \
+              --url "$PC_APIURL/login" \
               --header 'Accept: application/json; charset=UTF-8' \
               --header 'Content-Type: application/json; charset=UTF-8' \
-              --data "${AUTH_PAYLOAD}" | jq -r '.token')
+              --data "$AUTH_PAYLOAD" | jq -r '.token')
 
 
 
-ALERT_PAYLOAD_PRE='{
+ALERT_PAYLOAD=$(cat <<EOF
+{
   "alerts": [],
-  "dismissalNote": "%s",
+  "dismissalNote": "$DISMISS_NOTE",
   "dismissalTimeRange": {
     "relativeTimeType": "BACKWARD",
     "type": "relative",
     "value": {
-      "amount": "%s",
-      "unit": "%s"
+      "amount": "$TIMEAMOUNT",
+      "unit": "$TIMEUNIT"
     }
   },
   "filter": {
@@ -71,7 +72,7 @@ ALERT_PAYLOAD_PRE='{
       {
         "name": "policy.name",
         "operator": "=",
-        "value": "%s"
+        "value": "$ALERT_ID"
       }
     ],
     "groupBy": [],
@@ -82,24 +83,25 @@ ALERT_PAYLOAD_PRE='{
       "relativeTimeType": "BACKWARD",
       "type": "relative",
       "value": {
-        "amount": "%s",
-        "unit": "%s"
+        "amount": "",
+        "unit": ""
       }
     }
   },
   "policies": [
-    "%s"
+    ""
   ]
-}'
+}
+EOF
+)
 
-ALERT_PAYLOAD=$(printf "$ALERT_PAYLOAD_PRE" "$DISMISS_NOTE" "$POLICY_NAME" "$TIMEUNIT" "$TIMEAMOUNT" "$ALERT_ID")
 
 curl --request POST \
-     --url "${PC_APIURL}/alert/dismiss" \
+     --url "$PC_APIURL/alert/dismiss" \
      --header 'Accept: application/json, text/plain, */*' \
-     --header "x-redlock-auth: ${PC_JWT}" \
+     --header "x-redlock-auth: $PC_JWT" \
      --header 'Content-Type: application/json' \
-     --data "${alert_payload}"
+     --data "$ALERT_PAYLOAD"
 
 
 exit
