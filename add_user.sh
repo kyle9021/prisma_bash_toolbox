@@ -20,8 +20,10 @@ PC_USERNAME="$PC_USER_EMAIL"
 
 
 
-AUTH_PAYLOAD_PRE='{"username": "%s", "password": "%s"}'
-AUTH_PAYLOAD=$(printf "$AUTH_PAYLOAD_PRE" "$PC_ACCESSKEY" "$PC_SECRETKEY")
+AUTH_PAYLOAD=$(cat <<EOF
+{"username": "$PC_ACCESSKEY", "password": "$PC_SECRETKEY"}
+EOF
+)
 
 
 PC_JWT=$(curl --request POST \
@@ -37,30 +39,31 @@ PC_USER_ROLES=$(curl --request GET \
 
 PC_USER_ROLE_ID=$(printf %s "${PC_USER_ROLES}" | jq '.[] | {id: .id, name: .name}' | jq -r '.name, .id'| awk "/""${PC_USER_ROLE}""/{getline;print}")
 
-PC_ROLE_PAYLOAD_PRE='{
-  "accessKeyExpiration": "%s",
-  "accessKeyName": "%s",
-  "accessKeysAllowed": "%s",
-  "defaultRoleId": "%s",
-  "email": "%s",
-  "enableKeyExpiration": "%s",
-  "firstName": "%s",
-  "lastName": "%s",
+PC_ROLE_PAYLOAD=$(cat <<EOF
+{
+  "accessKeyExpiration": "$PC_USER_KEY_EXPIRATION_DATE",
+  "accessKeyName": "$PC_USER_KEY_NAME",
+  "accessKeysAllowed": "$PC_USER_ACCESSKEY_ALLOW",
+  "defaultRoleId": "$PC_USER_ROLE_ID",
+  "email": "$PC_USER_EMAIL",
+  "enableKeyExpiration": "$PC_USER_KEY_EXPIRATION",
+  "firstName": "$PC_USER_FIRSTNAME",
+  "lastName": "$PC_USER_LASTNAME",
   "roleIds": [
-    "%s"
+    "$PC_USER_ROLE_ID"
   ],
-  "timeZone": "%s",
+  "timeZone": "$PC_USER_TIMEZONE",
   "type": "USER_ACCOUNT",
-  "username": "%s"
-}'
-
-PC_ROLE_PAYLOAD=$(printf "$PC_ROLE_PAYLOAD_PRE" "$PC_USER_KEY_EXPIRATION_DATE" "$PC_USER_ACCESSKEY_NAME" "$PC_USER_ACCESSKEY_ALLOW" "$PC_USER_ROLE" "$PC_USER_EMAIL" "$PC_USER_KEY_EXPIRATION" "$PC_USER_FIRSTNAME" "$PC_USER_LASTNAME" "$PC_USER_ROLE_ID" "$PC_USER_TIMEZONE" "$PC_USERNAME")
+  "username": "$PC_USERNAME"
+}
+EOF
+)
 
 # This adds the new user
 curl --request POST \
      --url "$PC_APIURL/v2/user" \
      --header "Content-Type: application/json" \
-     --header "x-redlock-auth: ${PC_JWT}" \
+     --header "x-redlock-auth: $PC_JWT" \
      --data-raw "$PC_ROLE_PAYLOAD"
 
 
