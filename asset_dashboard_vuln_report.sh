@@ -21,7 +21,7 @@ TIMEAMOUNT="1"
 
 # formats above json correctly for the call below:
 
-AUTH_PAYLOAD=$(cat <<EOF
+PC_AUTH_PAYLOAD=$(cat <<EOF
 {"username": "$PC_ACCESSKEY", "password": "$PC_SECRETKEY"}
 EOF
 )
